@@ -8,7 +8,7 @@ from pathlib import Path
 from collector_json import (get_route_info, get_event_results, get_challenges,
                             route_challenge_dict, convert_user_data_to_json, get_event_info)
 from datetime import datetime, date, timedelta, timezone
-from event_finder import find_events
+from event_finder import find_race_events
 from enums import (IsoDow, RaceMonth)
 from jinja2 import Environment, FileSystemLoader
 from urllib.parse import quote_plus
@@ -197,7 +197,7 @@ def collect_event_data(race_number: int):
         return
     print(f'[-] Collecting event data for {race["name"]}')
     # Collect events
-    events = find_events(datetime.fromisoformat(race['date']), race['route'], race['laps'])
+    events = find_race_events(datetime.fromisoformat(race['date']), race['route'], race['laps'])
     json.dump(events, event_file.open('w', encoding='utf-8'), ensure_ascii=False, indent=2)
 
     # Is it time to start collecting event leaderboards?

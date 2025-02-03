@@ -13,23 +13,21 @@ def get_challenges() -> list:
     Collect Ongoing, Upcoming, Joined and Finished challenges from Rouvy.
     :return: A list of challenges.
     """
-    # Depending on whom the request is being performed by, we may need to search all 4 options
-    # Ongoing  == actual
-    # Upcoming == planned
-    # Joined   == open
-    # Finished == finished
-    challenge_types: list = ['open', 'available', 'finished'] # ['actual', 'planned', 'open', 'finished']
+    # Depending on whom the request is being performed by, we may need to search all 3 options
+    challenge_types: list = ['open', 'available', 'finished']
     challenge_list: list = list()
+    route = "routes/_main.challenges.status.$status"
     for challenge_type in challenge_types:
-        url = (f"https://riders.rouvy.com/challenges/status/{challenge_type}"
-               f"?_data=routes/_main.challenges.status.$status")
-        result: Response = nice_request(url=url)
-        c_data: dict = result.json()
+        url = f"https://riders.rouvy.com/challenges/status/{challenge_type}.data?_routes={route}"
+        result = nice_request(url=url)
+        remix_data = remix_parse(result.text, False)
+        c_data = remix_data[route]["data"]
         # Remove unneeded bloat
         c_data.pop('latestSpotlight', None)
         c_data.pop('pageMeta', None)
         c_data.pop('page', None)
-        challenge_list += c_data['challenges']
+        if 'challenges' in c_data:
+            challenge_list += c_data['challenges']
     return challenge_list
 
 
@@ -56,11 +54,11 @@ def get_event_info(event_id: str) -> dict:
     :return: Event information.
     """
     # Updated for RemixJS
-    route = "events_.$id" # filter the data a little
-    url = f"https://riders.rouvy.com/events/{event_id}.data?_routes=routes/_main.{route}"
+    route = "routes/_main.events_.$id" # filter the data a little
+    url = f"https://riders.rouvy.com/events/{event_id}.data?_routes={route}"
     result: Response = nice_request(url=url)
-    remix_data: dict = remix_parse(result.text)
-    race_info: dict = remix_data["routes/_main.events_.$id"]["data"]
+    remix_data: dict = remix_parse(result.text, debug=False)
+    race_info: dict = remix_data[route]["data"]
     # Remove unneeded bloat
     race_info.pop('pageMeta', None)
     race_info.get('event', dict()).get('route', dict()).pop('geometry', None)
@@ -74,10 +72,11 @@ def get_event_results(event_id: str) -> dict:
     :param event_id: The ID of the event.
     :return: A results leaderboard dictionary.
     """
-    url = f"https://riders.rouvy.com/events/{event_id}/leaderboard"\
-          f"?_data=routes/_main.events_.$id.leaderboard"
-    result: Response = nice_request(url=url)
-    return result.json()
+    route = "routes/_main.events_.$id.leaderboard"
+    url = f"https://riders.rouvy.com/events/{event_id}/leaderboard.data?_routes={route}"
+    result = nice_request(url=url)
+    remix_data = remix_parse(result.text, False)
+    return remix_data[route]['data']
 
 
 def get_rouvy_user(username: str) -> dict:
@@ -86,10 +85,12 @@ def get_rouvy_user(username: str) -> dict:
     :param username: Rouvy username.
     :return: User information.
     """
-    url = f"https://riders.rouvy.com/friends/search?query={username}&_data=routes/_main.friends_.search"
-    result: Response = nice_request(url=url)
-    user: dict
-    for user in result.json()['searchUser']:
+    route = "routes/_main.friends_.search"
+    url = f"https://riders.rouvy.com/friends/search.data?query={username}&_routes={route}"
+    result = nice_request(url=url)
+    remix_data = remix_parse(result.text, False)
+    data = remix_data[route]['data']
+    for user in data['searchUser']:
         if str(user['username']) == username:
             return user
     return {'error': 'Rouvy user not found'}
@@ -140,9 +141,11 @@ def get_route_info(route_id: str) -> dict:
     :param route_id: The ID of the route.
     :return: Route information.
     """
-    url = f'https://riders.rouvy.com/route/{route_id}?_data=routes%2F_main.route.$id._index'
-    result: Response = nice_request(url=url)
-    route_info: dict = result.json()
+    route = "routes/_main.new-route.$id"
+    url = f"https://riders.rouvy.com/new-route/{route_id}.data?_routes={route}"
+    result = nice_request(url=url)
+    remix_data = remix_parse(result.text, False)
+    route_info = remix_data[route]['data']
     # Remove unneeded bloat
     route_info.pop('legacyRoute', None)  # Hope we never need this
     # Let's keep geometry, you can do some cool things with it.

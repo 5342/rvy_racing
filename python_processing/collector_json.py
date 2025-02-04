@@ -90,7 +90,7 @@ def get_rouvy_user(username: str) -> dict:
     result = nice_request(url=url)
     remix_data = remix_parse(result.text, False)
     data = remix_data[route]['data']
-    for user in data['searchUser']:
+    for user in data.get('searchUser', list()):
         if str(user['username']) == username:
             return user
     return {'error': 'Rouvy user not found'}

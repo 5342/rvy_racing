@@ -141,8 +141,8 @@ def get_route_info(route_id: str) -> dict:
     :param route_id: The ID of the route.
     :return: Route information.
     """
-    route = "routes/_main.new-route.$id"
-    url = f"https://riders.rouvy.com/new-route/{route_id}.data?_routes={route}"
+    route = "routes/_main.route.$id"
+    url = f"https://riders.rouvy.com/route/{route_id}.data?_routes={route}"
     result = nice_request(url=url)
     remix_data = remix_parse(result.text, False)
     route_info = remix_data[route]['data']

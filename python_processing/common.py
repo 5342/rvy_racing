@@ -277,8 +277,8 @@ if __name__ == '__main__':
     # print(json.dumps(data, indent=2))
 
     #
-    # route = "routes/_main.new-route.$id"
-    # url = f"https://riders.rouvy.com/new-route/96635.data?_routes={route}"
+    # route = "routes/_main.route.$id"
+    # url = f"https://riders.rouvy.com/route/96635.data?_routes={route}"
     # result = nice_request(url=url)
     # remix_data = remix_parse(result.text, False)
     # data = remix_data[route]['data']

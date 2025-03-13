@@ -82,7 +82,7 @@ def find_events(race_title: str, date_from: datetime, date_to: datetime,
             print(f'[-] Found: {event["title"]}')
             event_info: dict = get_event_info(event['id'])
             # Check the actual route id, it is not in the search results :(
-            if not event_filter.is_route_ok(event_info["route"]["id"]):
+            if not event_filter.is_route_ok(event_info["routeDetail"]["id"]):
                 print('[X] Rejected: Route incorrect')
                 continue
             # All good we have an actual valid rvy_racing event...

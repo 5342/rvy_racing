@@ -104,7 +104,12 @@ def json_date_to_datetime(json_date: str) -> datetime:
     :param json_date: JSON date string.
     :return: datetime object.
     """
-    dt: datetime = datetime.strptime(json_date, '%Y-%m-%dT%H:%M:%S.%fZ')
+    dt: datetime
+    # Rouvy have started using epoch times, check and if it is parse accordingly
+    if isinstance(json_date, int):
+        dt = datetime.utcfromtimestamp(int(json_date)/1000)
+    else:
+        dt = datetime.strptime(json_date, '%Y-%m-%dT%H:%M:%S.%fZ')
     return dt
 
 

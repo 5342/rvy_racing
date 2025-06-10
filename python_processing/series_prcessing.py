@@ -602,7 +602,7 @@ def update_races_with_challenge():
             challenge_end = json_date_to_datetime(challenge['endDateTime'])
             if challenge_start <= race_date <= challenge_end:
                 updated = True
-                print(f'New Challenge found for race [{race["name"]}] route {route} - {challenge["title"]}')
+                print(f'[+] New Challenge found for race [{race["name"]}] route {route} - {challenge["title"]}')
                 race['challenge'] = challenge
     if updated:
         series_file = Path(Config.series.series_path, Files.JSON_RACES.value)

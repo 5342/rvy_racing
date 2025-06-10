@@ -65,7 +65,7 @@ def find_events(race_title: str, date_from: datetime, date_to: datetime,
                f"offset={offset}&"
                f"_routes={route}")
         result = nice_request(url=url)
-        remix_data = remix_parse(result.text)
+        remix_data = remix_parse(result.content.decode(encoding='utf-8'))
         x = remix_data.get(route, {}).get('data',{}).get('events', dict())
         result_count = len(x)
         if result_count == 0:

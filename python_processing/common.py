@@ -88,7 +88,7 @@ def get_authenticated_session() -> Session:
             continue  # Let's give it another go
         status_code = response.status_code
         if status_code == HTTPStatus.OK:
-            print("[*] Login Success")
+            # print("[*] Login Success")
             # Force our session to GMT / UTC
             session.cookies.set("CH-time-zone", "Greenwich", domain="riders.rouvy.com")
             __session = session  # let's keep the same sessions going...
@@ -253,7 +253,7 @@ if __name__ == '__main__':
     # route = "routes/_main.events_.$id.leaderboard"
     # url = f"https://riders.rouvy.com/events/b153748a-c84f-4011-bebd-dd2f6843be87/leaderboard.data?_routes={route}"
     # result = nice_request(url=url)
-    # remix_data = remix_parse(result.text, True)
+    # remix_data = remix_parse(result.content.decode(encoding='utf-8'), True)
     # data = remix_data[route]['data']
     # print(json.dumps(data, indent=2))
 
@@ -261,14 +261,14 @@ if __name__ == '__main__':
     # route = "events_.$id"
     # url = f"https://riders.rouvy.com/events/20cefe5e-ddf6-4729-a16e-cc9c03011f82.data?_routes=routes/_main.{route}"
     # result = nice_request(url=url)
-    # remix_data = remix_parse(result.text, True)
+    # remix_data = remix_parse(result.content.decode(encoding='utf-8'), True)
 
     # route = "challenges.status.$status"
     # # routes/_main.challenges.status.$status
     # for x in ['open', 'available', 'finished']:
     #     url = f"https://riders.rouvy.com/challenges/status/{x}.data?_routes=routes/_main.{route}"
     #     result = nice_request(url=url)
-    #     remix_data = remix_parse(result.text, False)
+    #     remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     #     c_data = remix_data["routes/_main.challenges.status.$status"]["data"]
     #     print(json.dumps(c_data.get('challenges', None), indent=2))
     #
@@ -277,7 +277,7 @@ if __name__ == '__main__':
     # route = "routes/_main.friends_.search"
     # url = f"https://riders.rouvy.com/friends/search.data?query={query}&_routes={route}"
     # result = nice_request(url=url)
-    # remix_data = remix_parse(result.text, False)
+    # remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     # data = remix_data[route]['data']
     # print(json.dumps(data, indent=2))
 
@@ -285,7 +285,7 @@ if __name__ == '__main__':
     # route = "routes/_main.route.$id"
     # url = f"https://riders.rouvy.com/route/96635.data?_routes={route}"
     # result = nice_request(url=url)
-    # remix_data = remix_parse(result.text, False)
+    # remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     # data = remix_data[route]['data']
     # print(json.dumps(data, indent=2))
 
@@ -303,4 +303,4 @@ if __name__ == '__main__':
     #        f"dateTo={date_to}&"
     #        f"_routes=routes/_main.{route}")
     # result = nice_request(url=url)
-    # remix_data = remix_parse(result.text, True)
+    # remix_data = remix_parse(result.content.decode(encoding='utf-8'), True)

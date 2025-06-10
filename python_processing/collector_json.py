@@ -22,7 +22,7 @@ def get_challenges() -> list:
     for challenge_type in challenge_types:
         url = f"https://riders.rouvy.com/challenges/status/{challenge_type}.data?_routes={route}"
         result = nice_request(url=url)
-        remix_data = remix_parse(result.text, False)
+        remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
         c_data = remix_data[route]["data"]
         # Remove unneeded bloat
         c_data.pop('latestSpotlight', None)
@@ -83,7 +83,7 @@ def get_event_info(event_id: str) -> dict:
     route = "routes/_main.events_.$id" # filter the data a little
     url = f"https://riders.rouvy.com/events/{event_id}.data?_routes={route}"
     result: Response = nice_request(url=url)
-    remix_data: dict = remix_parse(result.text, debug=False)
+    remix_data: dict = remix_parse(result.content.decode(encoding='utf-8'), debug=False)
     race_info: dict = remix_data[route]["data"]
     # Remove unneeded bloat
     race_info.pop('pageMeta', None)
@@ -101,7 +101,7 @@ def get_event_results(event_id: str) -> dict:
     route = "routes/_main.events_.$id.leaderboard"
     url = f"https://riders.rouvy.com/events/{event_id}/leaderboard.data?_routes={route}"
     result = nice_request(url=url)
-    remix_data = remix_parse(result.text, False)
+    remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     return remix_data[route]['data']
 
 
@@ -114,7 +114,7 @@ def get_rouvy_user(username: str) -> dict:
     route = "routes/_main.friends_.search"
     url = f"https://riders.rouvy.com/friends/search.data?query={username}&_routes={route}"
     result = nice_request(url=url)
-    remix_data = remix_parse(result.text, False)
+    remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     data = remix_data[route]['data']
     for user in data.get('searchUser', list()):
         if str(user['username']) == username:
@@ -170,7 +170,7 @@ def get_route_info(route_id: str) -> dict:
     route = "routes/_main.route.$id"
     url = f"https://riders.rouvy.com/route/{route_id}.data?_routes={route}"
     result = nice_request(url=url)
-    remix_data = remix_parse(result.text, False)
+    remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
     route_info = remix_data[route]['data']
     # Remove unneeded bloat
     route_info.pop('legacyRoute', None)  # Hope we never need this

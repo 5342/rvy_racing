@@ -14,8 +14,10 @@ def get_challenges() -> list:
     :return: A list of challenges.
     """
     # Depending on whom the request is being performed by, we may need to search all 3 options
+    print(f"[+] Collecting Challenges")
     challenge_types: list = ['open', 'available', 'finished']
     challenge_list: list = list()
+    checked_challenges: list = list()
     route = "routes/_main.challenges.status.$status"
     for challenge_type in challenge_types:
         url = f"https://riders.rouvy.com/challenges/status/{challenge_type}.data?_routes={route}"
@@ -28,6 +30,32 @@ def get_challenges() -> list:
         c_data.pop('page', None)
         if 'challenges' in c_data:
             challenge_list += c_data['challenges']
+        # This is new
+        if 'featuredChallenges' in c_data:
+            challenge_list += c_data['featuredChallenges']
+    # We need to dig deper now o get the routes
+    for challenge in challenge_list:
+        challenge['challenge_routes'] = list()
+        challenge_id = challenge['id']
+        if challenge_id in checked_challenges:
+            continue
+        print(f"[-]   Collecting Challenge {challenge_id}")
+        checked_challenges.append(challenge_id)
+        route = "routes/_main.challenges.$id"
+        url = f"https://riders.rouvy.com/challenges/{challenge_id}.data?_routes={route}"
+        result = nice_request(url=url)
+        remix_data = remix_parse(result.content.decode(encoding='utf-8'), False)
+        ch_data = remix_data[route]["data"]
+        challenge_routes: list = list()
+        for task in ch_data['challenge']['tasks']:
+            if task['__typename'] !='RouteTask':
+                continue # We only care about route based tasks
+            # Remove unneeded bloat
+            route = task['route']
+            route.pop('simplifiedGeometryJson', None)
+            route.pop('simplifiedGeometry', None)
+            challenge_routes.append(route)
+        challenge['challenge_routes'] = challenge_routes
     return challenge_list
 
 
@@ -40,10 +68,8 @@ def route_challenge_dict(challenges: list) -> dict:
     route_challenge: dict = dict()
     challenge: dict
     for challenge in challenges:
-        segment: dict
-        for segment in challenge['segments']:
-            if segment['value'] is None:  # Rouvy have some grayness in the type of challenge
-                route_challenge[str(segment['target'])] = challenge['challenge']
+        for route in challenge['challenge_routes']:
+            route_challenge[str(route['id'])] = challenge
     return route_challenge
 
 

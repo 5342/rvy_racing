@@ -88,7 +88,7 @@ def get_authenticated_session() -> Session:
             continue  # Let's give it another go
         status_code = response.status_code
         if status_code == HTTPStatus.OK:
-            print("[*] Login Success")
+            # print("[*] Login Success")
             # Force our session to GMT / UTC
             session.cookies.set("CH-time-zone", "Greenwich", domain="riders.rouvy.com")
             __session = session  # let's keep the same sessions going...
